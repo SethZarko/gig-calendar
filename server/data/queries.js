@@ -114,6 +114,30 @@ export function getGigsByMonth(year, month) {
   return stmt.all(`${year}-${paddedMonth}-%`); 
 }
 
+export function getGigsByWeek(startDate, endDate) {
+  const stmt = database.prepare(`
+    ${baseGigQuery}
+    WHERE g.date >= ? AND g.date < ?
+    ORDER BY g.date ASC
+  `);
+  
+  // Expects full ISO strings or "YYYY-MM-DD" strings.
+  // Grabs everything from the start date up to (but not including) the end date.
+  return stmt.all(startDate, endDate); 
+}
+
+export function getGigsByDay(dateString) {
+  const stmt = database.prepare(`
+    ${baseGigQuery}
+    WHERE g.date LIKE ?
+    ORDER BY g.date ASC
+  `);
+  
+  // Expects dateString to be format "YYYY-MM-DD"
+  // Matches anything starting with "YYYY-MM-DD"
+  return stmt.all(`${dateString}%`); 
+}
+
 export function getAllVenues() {
   const stmt = database.prepare(`
     SELECT * FROM venues

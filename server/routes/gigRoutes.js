@@ -89,6 +89,47 @@ router.get('/month/:year/:month', (req, res) => {
   }
 });
 
+// GET /api/gigs/week/:date - Get gigs by week (e.g., /api/gigs/week/2026-05-24)
+router.get('/week/:date', (req, res) => {
+  try {
+    const startDateString = req.params.date; 
+    
+    // Calculate the start and end dates natively
+    const startDate = new Date(startDateString);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 7);
+    
+    // Convert to ISO strings to perfectly match the SQLite range query
+    const startIso = startDate.toISOString(); 
+    const endIso = endDate.toISOString();
+
+    const gigs = gigQueries.getGigsByWeek(startIso, endIso);
+
+    res.status(200).json({
+        success: true,
+        message: "Gigs Returned By Week",
+        data: gigs
+    });
+  } catch (error) {
+     res.status(500).json({ success: false, message: "Failed to fetch gigs by week.", error: error.message });
+  }
+});
+
+// GET /api/gigs/day/:date - Get gigs by day (e.g., /api/gigs/day/2026-05-24)
+router.get('/day/:date', (req, res) => {
+  try {
+    const gigs = gigQueries.getGigsByDay(req.params.date);
+
+    res.status(200).json({
+        success: true,
+        message: "Gigs Returned By Day",
+        data: gigs
+    });
+  } catch (error) {
+     res.status(500).json({ success: false, message: "Failed to fetch gigs by day.", error: error.message });
+  }
+});
+
 // PATCH /api/gigs/:id - Update a gig
 router.patch('/:id', (req, res) => {
   try {
