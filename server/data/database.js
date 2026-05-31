@@ -1,10 +1,9 @@
 import { DatabaseSync } from 'node:sqlite'
-import __dirname from '../utils/dirname.js'
 
 import { gigModel } from './models/gig.js'
 import { venueModel } from './models/venue.js'
 
-const database = new DatabaseSync(`${__dirname}/gigs.db`)
+const database = new DatabaseSync(`${import.meta.dirname}/gigs.db`)
 
 database.exec('PRAGMA foreign_keys = ON;')
 
