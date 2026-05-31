@@ -1,7 +1,7 @@
 export const gigModel = `
 CREATE TABLE IF NOT EXISTS gigs (
-  gig_id TEXT PRIMARY KEY,
-  venue_id TEXT NOT NULL,
+  gig_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  venue_id INTEGER NOT NULL,
   date TEXT NOT NULL,
   payment INTEGER NOT NULL,
   confirmed BOOLEAN NOT NULL DEFAULT 0,
