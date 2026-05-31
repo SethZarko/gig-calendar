@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS gigs (
   payment INTEGER NOT NULL,
   confirmed BOOLEAN NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-  updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
 
   FOREIGN KEY (venue_id) REFERENCES venues(venue_id) ON DELETE RESTRICT
 );
