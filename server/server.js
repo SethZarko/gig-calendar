@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import './data/database.js';
 import cors from 'cors'
+import { corsOptions } from './utils/corsOptions.js'
 
 import gigsRouter from './routes/gigRoutes.js';
 import venuesRouter from './routes/venueRoutes.js';
@@ -10,7 +11,7 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+app.use(cors(corsOptions))
 
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'ok' }));
 
