@@ -228,8 +228,6 @@ export function updateVenue(venueId, payload) {
 }
 
 // DELETE Queries //
-import database from '../data/database.js';
-
 export function deleteGig(gigId) {
   const stmt = database.prepare(`
     DELETE FROM gigs 
