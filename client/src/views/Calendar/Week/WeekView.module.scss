@@ -1,0 +1,211 @@
+$bg-dark: #0f1115;
+$text-primary: #e2e8f0;
+$text-secondary: #8b949e;
+$accent-blue: #3b82f6;
+$border-subtle: rgba(255, 255, 255, 0.05);
+$card-bg: rgba(255, 255, 255, 0.02);
+$hover-bg: rgba(255, 255, 255, 0.05);
+
+.weekContainer {
+  width: 100%;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.weekHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.025em;
+  }
+
+  .navControls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .navButton, .viewToggle {
+    background: transparent;
+    color: $text-secondary;
+    border: 1px solid $border-subtle;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $hover-bg;
+      color: $text-primary;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+  min-height: 500px;
+}
+
+.dayColumn {
+  position: relative;
+  background-color: $card-bg;
+  border: 1px solid $border-subtle;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: $hover-bg;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .columnHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $border-subtle;
+    margin-bottom: 1rem;
+
+    .weekdayName {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .dayNumber {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $text-primary;
+    }
+  }
+
+  &.today {
+    border-color: rgba(59, 130, 246, 0.5);
+    background-color: rgba(59, 130, 246, 0.03);
+
+    .columnHeader .dayNumber {
+      color: $accent-blue;
+    }
+  }
+
+  &.hasGig {
+    border-color: rgba(59, 130, 246, 0.15);
+  }
+}
+
+.gigList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.gigCard {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  .venueName {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #93c5fd;
+    line-height: 1.2;
+  }
+
+  .statusIndicator {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $text-secondary;
+    letter-spacing: 0.05em;
+  }
+}
+
+// Tooltip layout structure
+.dayColumn .tooltip {
+  position: absolute;
+  bottom: 102%;
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: rgba(15, 17, 21, 0.98);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 20;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.12) transparent transparent transparent;
+  }
+}
+
+.dayColumn:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+// Mobile stacking
+@media (max-width: 1024px) {
+  .weekGrid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .dayColumn .columnHeader {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    
+    .weekdayName { margin-bottom: 0; }
+  }
+
+  .dayColumn .tooltip {
+    display: none; // Tooltips disabled on mobile columns
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

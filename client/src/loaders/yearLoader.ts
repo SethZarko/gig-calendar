@@ -12,10 +12,10 @@ interface IFlatGig {
   confirmed: boolean | number;
   venue_id: number;
   venue_name: string;
+  street: string;
   city: string;
   province: string;
   postalCode: string;
-  street?: string;
 }
 
 export const yearLoader = async ({ params }: LoaderFunctionArgs) => {

@@ -18,6 +18,8 @@ import { DayView } from "./views/Calendar/Day/DayView";
 // Loader Imports
 import { venuesLoader } from './loaders/venueLoader';
 import { yearLoader } from "./loaders/yearLoader";
+import { monthLoader } from "./loaders/monthLoader";
+import { weekLoader } from "./loaders/weekLoader";
 
 export const router = createBrowserRouter([
   {
@@ -46,12 +48,12 @@ export const router = createBrowserRouter([
           {
             path: "month/:year/:month",
             Component: MonthView,
-            // loader: monthLoader
+            loader: monthLoader
           },
           {
             path: "week/:date",
             Component: WeekView,
-            // loader: weekLoader
+            loader: weekLoader
           },
           {
             path: "day/:date",
