@@ -105,7 +105,7 @@ export const MonthView = () => {
           {MONTH_NAMES[month - 1]} {year}
         </h1>
         <Link to={`/calendar/year/${year}`} className={styles.viewToggle}>
-          Year View
+          Yearly View
         </Link>
       </header>
 

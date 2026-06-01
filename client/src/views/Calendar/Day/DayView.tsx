@@ -122,7 +122,7 @@ export const DayView = () => {
                 
                 <div className={styles.cardBody}>
                   <div className={styles.infoGroup}>
-                    <span className={styles.label}>Location</span>
+                    <span className={styles.label}>Address</span>
                     <span className={styles.value}>
                       {gig.venue.street ? `${gig.venue.street}, ` : ""}
                       {gig.venue.city}, {gig.venue.province} {gig.venue.postalCode}

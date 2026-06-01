@@ -134,11 +134,17 @@ export const GigModal = ({
     }
   };
 
+  const formattedDate = new Date(`${currentDate}T12:00:00`).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <h2>{existingGig ? "Edit Gig" : "Add New Gig"}</h2>
-        <p className={styles.dateSubtitle}>For {currentDate}</p>
+        <p className={styles.dateSubtitle}>{formattedDate}</p>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
