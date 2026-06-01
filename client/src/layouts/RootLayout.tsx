@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useNavigation, useLocation } from "react-router";
+import { Outlet, NavLink, useNavigation, useLocation, Link } from "react-router";
 
 import styles from "./RootLayout.module.scss";
 
@@ -13,7 +13,8 @@ export const RootLayout = () => {
   return (
     <div className={styles.appContainer}>
       <div className={styles.headerContainer}>
-        <h1>Gig Calendar</h1>
+        <Link to='/' className={styles.logo}><h1>Gig Calendar</h1></Link>
+        
         <header>
           <nav>
             <NavLink

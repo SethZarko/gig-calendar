@@ -20,6 +20,7 @@ import { venuesLoader } from './loaders/venueLoader';
 import { yearLoader } from "./loaders/yearLoader";
 import { monthLoader } from "./loaders/monthLoader";
 import { weekLoader } from "./loaders/weekLoader";
+import { dayLoader } from "./loaders/dayLoader";
 
 export const router = createBrowserRouter([
   {
@@ -58,7 +59,7 @@ export const router = createBrowserRouter([
           {
             path: "day/:date",
             Component: DayView,
-            // loader: dayLoader
+            loader: dayLoader
           },
         ],
       },
