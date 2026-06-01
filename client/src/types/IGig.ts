@@ -6,6 +6,6 @@ export interface IGig {
     confirmed: boolean
     venue: Venue
 
-    createdAt: string | Date
-    updatedAt: string | Date
+    createdAt?: string | Date
+    updatedAt?: string | Date
 }
