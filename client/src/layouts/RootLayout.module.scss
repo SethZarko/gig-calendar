@@ -17,6 +17,12 @@ $border-subtle: rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
 
+  .logo {
+    text-decoration: none;
+    color: $text-primary;
+    letter-spacing: 1px;
+  }
+
   .headerContainer {
     display: flex;
     align-items: center;
