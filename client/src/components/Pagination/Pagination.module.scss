@@ -1,0 +1,62 @@
+$bg-dark: #0f1115;
+$text-primary: #e2e8f0;
+$text-secondary: #8b949e;
+$accent-blue: #3b82f6;
+$border-subtle: rgba(255, 255, 255, 0.1);
+$hover-bg: rgba(255, 255, 255, 0.05);
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.navButton, .pageButton {
+  background: transparent;
+  border: 1px solid $border-subtle;
+  color: $text-secondary;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: $hover-bg;
+    color: $text-primary;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 0.25rem;
+
+  .pageButton {
+    padding: 0.5rem 0.8rem;
+    min-width: 38px;
+    
+    &.active {
+      background: $accent-blue;
+      color: #ffffff;
+      border-color: $accent-blue;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+
+    &.ellipsis {
+      border: none;
+      background: transparent;
+      padding: 0.5rem 0.2rem;
+      pointer-events: none;
+    }
+  }
+}
