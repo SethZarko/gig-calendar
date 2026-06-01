@@ -66,11 +66,10 @@ export function createGig(payload) {
 }
 
 // GET Queries // 
-
 const baseGigQuery = `
   SELECT 
     g.gig_id, g.date, g.payment, g.confirmed,
-    v.venue_id, v.name AS venue_name, v.city, v.province
+    v.venue_id, v.name AS venue_name, v.street, v.city, v.province, v.postal_code
   FROM gigs g
   INNER JOIN venues v ON g.venue_id = v.venue_id
 `;
