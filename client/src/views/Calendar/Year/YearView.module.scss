@@ -1,0 +1,189 @@
+$bg-dark: #0f1115;
+$text-primary: #e2e8f0;
+$text-secondary: #8b949e;
+$accent-blue: #3b82f6;
+$border-subtle: rgba(255, 255, 255, 0.05);
+$card-bg: rgba(255, 255, 255, 0.02);
+$hover-bg: rgba(255, 255, 255, 0.08);
+
+.yearContainer {
+  width: 100%;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.yearHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.025em;
+  }
+
+  .navButton {
+    background: transparent;
+    color: $text-secondary;
+    border: 1px solid $border-subtle;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $hover-bg;
+      color: $text-primary;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.monthsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.monthCard {
+  background-color: $card-bg;
+  border: 1px solid $border-subtle;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+
+  .monthTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0 0 1.35rem 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $accent-blue;
+    }
+  }
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 0.95rem;
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.emptySlot {
+  aspect-ratio: 1;
+}
+
+.dayButton {
+  position: relative; 
+  aspect-ratio: 1;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: $text-secondary;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: $hover-bg;
+    color: #ffffff;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &.hasGig {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: $accent-blue;
+    font-weight: 700;
+
+    &:hover {
+      background-color: rgba(59, 130, 246, 0.3);
+    }
+  }
+
+  &.today {
+    border: 1px solid $accent-blue;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  &.today.hasGig {
+    background-color: $accent-blue;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #1d4ed8; 
+    }
+  }
+
+  // The Tooltip logic
+  .tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: rgba(15, 17, 21, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px;
+      border-style: solid;
+      border-color: rgba(255, 255, 255, 0.1) transparent transparent transparent;
+    }
+  }
+
+  &:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
