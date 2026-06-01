@@ -11,18 +11,34 @@ $row-slot-height: 358px;
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
-  
+
   display: flex;
   flex-direction: column;
+
+  .searchInput {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: white;
+    font-size: 1rem;
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+  }
 
   h1 {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 2rem;
     position: relative;
-    
+
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       bottom: -6px;
@@ -40,9 +56,9 @@ $row-slot-height: 358px;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    
-    min-height: $row-slot-height; 
-    justify-content: flex-start; 
+
+    min-height: $row-slot-height;
+    justify-content: flex-start;
 
     li {
       background-color: $card-bg;
@@ -66,7 +82,9 @@ $row-slot-height: 358px;
         background-color: $card-hover-bg;
         border-color: rgba(59, 130, 246, 0.2);
         transform: translateY(-2px);
-        strong { color: $accent-blue; }
+        strong {
+          color: $accent-blue;
+        }
       }
     }
   }
@@ -74,7 +92,7 @@ $row-slot-height: 358px;
   p {
     color: $text-secondary;
     text-align: center;
-    min-height: $row-slot-height; 
+    min-height: $row-slot-height;
     margin: 0;
     display: flex;
     align-items: center;
