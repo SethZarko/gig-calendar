@@ -9,7 +9,7 @@ import database from './database.js'
  * @param {Object} [payload.venue] - Optional: Details for a new venue
  */
 export function createGig(payload) {
-  const { date, payment, venue_id, venue } = payload;
+  const { date, payment, confirmed, venue_id, venue } = payload;
   
   let finalVenueId = venue_id; 
   let finalGigId = null;
@@ -42,10 +42,10 @@ export function createGig(payload) {
 
     // 3. Create the Gig
     const insertGig = database.prepare(`
-      INSERT INTO gigs (venue_id, date, payment)
-      VALUES (?, ?, ?)
+      INSERT INTO gigs (venue_id, date, payment, confirmed)
+      VALUES (?, ?, ?, ?)
     `);
-    const gigInfo = insertGig.run(finalVenueId, date, payment);
+    const gigInfo = insertGig.run(finalVenueId, date, payment, confirmed ? 1 : 0);
     
     finalGigId = gigInfo.lastInsertRowid;
 

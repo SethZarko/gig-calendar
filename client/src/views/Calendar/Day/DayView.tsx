@@ -1,5 +1,8 @@
-import { useLoaderData, useNavigate, Link } from "react-router";
+import { useState } from "react";
+import { useLoaderData, useNavigate, Link, useRevalidator } from "react-router"; 
+import { GigModal } from "../../../components/GigModal/GigModal";
 import type { DayLoaderData } from "../../../loaders/dayLoader";
+import type { IGig } from "../../../types/IGig";
 import styles from "./DayView.module.scss";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -11,6 +14,42 @@ const MONTH_NAMES = [
 export const DayView = () => {
   const { gigs, currentDate } = useLoaderData() as DayLoaderData;
   const navigate = useNavigate();
+  const revalidator = useRevalidator(); 
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedGig, setSelectedGig] = useState<IGig | null>(null);
+
+  const handleOpenAddModal = () => {
+    setSelectedGig(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (gig: IGig) => {
+    setSelectedGig(gig);
+    setIsModalOpen(true);
+  };
+
+  // --- Delete Handler ---
+  const handleDeleteGig = async (gigId: number | undefined) => {
+    if (!gigId) return;
+
+    const isConfirmed = window.confirm("Are you sure you want to delete this gig? This action cannot be undone.");
+    if (!isConfirmed) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}api/gigs/${gigId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete gig");
+
+      revalidator.revalidate();
+    } catch (error) {
+      console.error("Delete Error:", error);
+      alert("Failed to delete gig. Please try again.");
+    }
+  };
+  // --------------------------
 
   const dateObj = new Date(`${currentDate}T12:00:00`);
   const dayOfWeek = WEEKDAYS[dateObj.getDay()];
@@ -54,16 +93,31 @@ export const DayView = () => {
         {gigs.length === 0 ? (
           <div className={styles.emptyState}>
             <p>No gigs scheduled for this day.</p>
+            <button onClick={handleOpenAddModal} className={styles.addGigBtn}>
+              + Add Gig
+            </button>
           </div>
         ) : (
           <div className={styles.gigList}>
             {gigs.map((gig, index) => (
               <div key={index} className={styles.gigDetailCard}>
                 <div className={styles.cardHeader}>
-                  <h3>{gig.venue.name}</h3>
-                  <span className={`${styles.statusBadge} ${gig.confirmed ? styles.confirmed : styles.pending}`}>
-                    {gig.confirmed ? "Confirmed" : "Pending"}
-                  </span>
+                  <div className={styles.headerLeft}>
+                    <h3>{gig.venue.name}</h3>
+                    <span className={`${styles.statusBadge} ${gig.confirmed ? styles.confirmed : styles.pending}`}>
+                      {gig.confirmed ? "Confirmed" : "Pending"}
+                    </span>
+                  </div>
+                  
+                  {/* Grouped Edit and Delete Buttons */}
+                  <div className={styles.actionButtons}>
+                    <button onClick={() => handleOpenEditModal(gig)} className={styles.editBtn}>
+                      Edit
+                    </button>
+                    <button onClick={() => handleDeleteGig(gig.gig_id)} className={styles.deleteBtn}>
+                      Delete
+                    </button>
+                  </div>
                 </div>
                 
                 <div className={styles.cardBody}>
@@ -82,9 +136,23 @@ export const DayView = () => {
                 </div>
               </div>
             ))}
+            
+            <button onClick={handleOpenAddModal} className={styles.addGigBtn}>
+              + Add Another Gig
+            </button>
           </div>
         )}
       </div>
+
+      {isModalOpen && (
+        <GigModal 
+          key={selectedGig ? `edit-${selectedGig.gig_id}` : "add-new"}
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          currentDate={currentDate} 
+          existingGig={selectedGig} 
+        />
+      )}
     </div>
   );
 };
