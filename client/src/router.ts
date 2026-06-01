@@ -15,7 +15,7 @@ import { MonthView } from "./views/Calendar/Month/MonthView";
 import { WeekView } from "./views/Calendar/Week/WeekView";
 import { DayView } from "./views/Calendar/Day/DayView";
 
-// import { monthLoader, yearLoader, venuesLoader } from './loaders';
+import { venuesLoader } from './loaders/venueLoader';
 
 export const router = createBrowserRouter([
   {
@@ -61,7 +61,7 @@ export const router = createBrowserRouter([
       {
         path: "venues",
         Component: VenueList,
-        // loader: venuesLoader
+        loader: venuesLoader
       },
       {
         path: "*",
