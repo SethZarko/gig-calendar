@@ -5,6 +5,7 @@ import { venueModel } from './models/venue.js'
 
 const database = new DatabaseSync(`${import.meta.dirname}/gigs.db`)
 
+database.exec('PRAGMA journal_mode = WAL;')
 database.exec('PRAGMA foreign_keys = ON;')
 
 database.exec(venueModel)

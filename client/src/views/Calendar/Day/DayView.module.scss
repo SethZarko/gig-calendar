@@ -25,7 +25,7 @@ $hover-bg: rgba(255, 255, 255, 0.05);
 
   .titleStack {
     text-align: center;
-    
+
     h1 {
       font-size: 2.5rem;
       font-weight: 800;
@@ -47,7 +47,8 @@ $hover-bg: rgba(255, 255, 255, 0.05);
     gap: 0.5rem;
   }
 
-  .navButton, .viewToggle {
+  .navButton,
+  .viewToggle {
     background: transparent;
     color: $text-secondary;
     border: 1px solid $border-subtle;
@@ -73,10 +74,11 @@ $hover-bg: rgba(255, 255, 255, 0.05);
   background: $card-bg;
   border: 1px dashed $border-subtle;
   border-radius: 12px;
-  
+
   p {
     color: $text-secondary;
     font-size: 1.1rem;
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -91,7 +93,9 @@ $hover-bg: rgba(255, 255, 255, 0.05);
   border: 1px solid $border-subtle;
   border-radius: 12px;
   padding: 1.5rem;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 
   &:hover {
     border-color: rgba(59, 130, 246, 0.3);
@@ -101,16 +105,65 @@ $hover-bg: rgba(255, 255, 255, 0.05);
   .cardHeader {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 
-    h3 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: $text-primary;
+    .headerLeft {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: $text-primary;
+      }
+    }
+
+    /* Add this inside .cardHeader or at the bottom of your file */
+    .actionButtons {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    /* Ensure editBtn matches slightly smaller text if preferred */
+    .editBtn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #8b949e;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+      }
+    }
+    
+    .deleteBtn {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.2); 
+      color: #ef4444; 
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.4);
+      }
     }
   }
 
@@ -173,7 +226,52 @@ $hover-bg: rgba(255, 255, 255, 0.05);
   }
 }
 
+/* --- ADD & EDIT BUTTON STYLES --- */
+
+.addGigBtn {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px dashed rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+    color: #ffffff;
+  }
+}
+
+.editBtn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #8b949e;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+}
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
