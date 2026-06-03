@@ -8,6 +8,7 @@ export interface MonthLoaderData {
 }
 
 interface DatabaseGigRow {
+  gig_id: number;
   date: string;
   payment: number;
   confirmed: boolean | number;
@@ -35,6 +36,7 @@ export const monthLoader = async ({ params }: LoaderFunctionArgs) => {
     const flatGigs: DatabaseGigRow[] = responseData.data || [];
 
     const gigs: IGig[] = flatGigs.map((g: DatabaseGigRow) => ({
+      gig_id: g.gig_id,
       date: g.date,
       payment: g.payment,
       confirmed: !!g.confirmed,
