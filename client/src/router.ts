@@ -3,7 +3,7 @@ import { createBrowserRouter, redirect } from "react-router";
 // Layouts & Global Components
 import { RootLayout } from "./layouts/RootLayout";
 import { GlobalError } from "./components/GlobalError";
-import { GlobalLoader } from "./components/GlobalLoader";
+import { GlobalLoader } from "./components/GlobalLoader/GlobalLoader";
 
 // Pages
 import { VenueList } from "./pages/Venues/VenueList";
