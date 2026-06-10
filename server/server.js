@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
-import './data/database.js';
 import cors from 'cors'
+import { initDatabase } from './data/database.js';
 import { corsOptions } from './utils/corsOptions.js'
 
 import gigsRouter from './routes/gigRoutes.js';
@@ -12,6 +12,8 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors(corsOptions))
+
+await initDatabase()
 
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'ok' }));
 
