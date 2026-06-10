@@ -2,55 +2,39 @@ import database from './database.js'
 
 /**
  * Creates a new gig and optionally a new venue if an existing ID isn't provided.
- * @param {Object} payload 
- * @param {string} payload.date - ISO 8601 string
- * @param {number} payload.payment - Integer (cents)
- * @param {number} [payload.venue_id] - Optional: The integer ID of an existing venue
- * @param {Object} [payload.venue] - Optional: Details for a new venue
  */
-export function createGig(payload) {
+export async function createGig(payload) {
   const { date, payment, confirmed, venue_id, venue } = payload;
   
   let finalVenueId = venue_id; 
   let finalGigId = null;
 
-  // 1. Begin the Transaction
-  database.exec('BEGIN TRANSACTION');
+  const tx = await database.transaction("write");
 
   try {
-    // 2. Handle New Venue Creation
     if (!finalVenueId && venue) {
-      const insertVenue = database.prepare(`
-        INSERT INTO venues (name, street, city, province, postal_code)
-        VALUES (?, ?, ?, ?, ?)
-      `);
+      const venueInfo = await tx.execute({
+        sql: `INSERT INTO venues (name, street, city, province, postal_code)
+              VALUES (?, ?, ?, ?, ?)`,
+        args: [venue.name, venue.street, venue.city, venue.province, venue.postal_code]
+      });
       
-      const venueInfo = insertVenue.run(
-        venue.name,
-        venue.street,
-        venue.city,
-        venue.province,
-        venue.postal_code
-      );
-      
-      finalVenueId = venueInfo.lastInsertRowid; 
+      finalVenueId = Number(venueInfo.lastInsertRowid); 
     }
 
     if (!finalVenueId) {
       throw new Error("A venue_id or a valid venue object is required.");
     }
 
-    // 3. Create the Gig
-    const insertGig = database.prepare(`
-      INSERT INTO gigs (venue_id, date, payment, confirmed)
-      VALUES (?, ?, ?, ?)
-    `);
-    const gigInfo = insertGig.run(finalVenueId, date, payment, confirmed ? 1 : 0);
+    const gigInfo = await tx.execute({
+      sql: `INSERT INTO gigs (venue_id, date, payment, confirmed)
+            VALUES (?, ?, ?, ?)`,
+      args: [finalVenueId, date, payment, confirmed ? 1 : 0]
+    });
     
-    finalGigId = gigInfo.lastInsertRowid;
+    finalGigId = Number(gigInfo.lastInsertRowid);
 
-    // 4. Commit the Transaction
-    database.exec('COMMIT');
+    await tx.commit();
 
     return { 
       success: true, 
@@ -59,8 +43,7 @@ export function createGig(payload) {
     };
 
   } catch (error) {
-    // 5. Rollback on Error
-    database.exec('ROLLBACK');
+    await tx.rollback();
     throw error; 
   }
 }
@@ -74,92 +57,71 @@ const baseGigQuery = `
   INNER JOIN venues v ON g.venue_id = v.venue_id
 `;
 
-export function getAllGigs() {
-  const stmt = database.prepare(`
-    ${baseGigQuery}
-    ORDER BY g.date ASC
-  `);
-  return stmt.all();
+export async function getAllGigs() {
+  const res = await database.execute(`${baseGigQuery} ORDER BY g.date ASC`);
+  return res.rows;
 }
 
-export function getGigById(gigId) {
-  const stmt = database.prepare(`
-    ${baseGigQuery}
-    WHERE g.gig_id = ?
-  `);
-  return stmt.get(gigId);
+export async function getGigById(gigId) {
+  const res = await database.execute({
+    sql: `${baseGigQuery} WHERE g.gig_id = ?`,
+    args: [gigId]
+  });
+  return res.rows[0] || null;
 }
 
-export function getGigsByYear(year) {
-  const stmt = database.prepare(`
-    ${baseGigQuery}
-    WHERE g.date LIKE ?
-    ORDER BY g.date ASC
-  `);
-  // Matches anything starting with "YYYY-"
-  return stmt.all(`${year}-%`); 
+export async function getGigsByYear(year) {
+  const res = await database.execute({
+    sql: `${baseGigQuery} WHERE g.date LIKE ? ORDER BY g.date ASC`,
+    args: [`${year}-%`]
+  });
+  return res.rows;
 }
 
-export function getGigsByMonth(year, month) {
-  const stmt = database.prepare(`
-    ${baseGigQuery}
-    WHERE g.date LIKE ?
-    ORDER BY g.date ASC
-  `);
-  // month is padded with a zero (e.g., "05" instead of "5")
+export async function getGigsByMonth(year, month) {
   const paddedMonth = month.toString().padStart(2, '0');
-  
-  // Matches anything starting with "YYYY-MM-"
-  return stmt.all(`${year}-${paddedMonth}-%`); 
+  const res = await database.execute({
+    sql: `${baseGigQuery} WHERE g.date LIKE ? ORDER BY g.date ASC`,
+    args: [`${year}-${paddedMonth}-%`]
+  });
+  return res.rows;
 }
 
-export function getGigsByWeek(startDate, endDate) {
-  const stmt = database.prepare(`
-    ${baseGigQuery}
-    WHERE g.date >= ? AND g.date < ?
-    ORDER BY g.date ASC
-  `);
-  
-  // Expects full ISO strings or "YYYY-MM-DD" strings.
-  // Grabs everything from the start date up to (but not including) the end date.
-  return stmt.all(startDate, endDate); 
+export async function getGigsByWeek(startDate, endDate) {
+  const res = await database.execute({
+    sql: `${baseGigQuery} WHERE g.date >= ? AND g.date < ? ORDER BY g.date ASC`,
+    args: [startDate, endDate]
+  });
+  return res.rows;
 }
 
-export function getGigsByDay(dateString) {
-  const stmt = database.prepare(`
-    ${baseGigQuery}
-    WHERE g.date LIKE ?
-    ORDER BY g.date ASC
-  `);
-  
-  // Expects dateString to be format "YYYY-MM-DD"
-  // Matches anything starting with "YYYY-MM-DD"
-  return stmt.all(`${dateString}%`); 
+export async function getGigsByDay(dateString) {
+  const res = await database.execute({
+    sql: `${baseGigQuery} WHERE g.date LIKE ? ORDER BY g.date ASC`,
+    args: [`${dateString}%`]
+  });
+  return res.rows;
 }
 
-export function getAllVenues() {
-  const stmt = database.prepare(`
-    SELECT * FROM venues
-    ORDER BY name ASC
-  `);
-  return stmt.all();
+export async function getAllVenues() {
+  const res = await database.execute(`SELECT * FROM venues ORDER BY name ASC`);
+  return res.rows;
 }
 
-export function getVenueById(venueId) {
-  const stmt = database.prepare(`
-    SELECT * FROM venues
-    WHERE venue_id = ?
-  `);
-  return stmt.get(venueId);
+export async function getVenueById(venueId) {
+  const res = await database.execute({
+    sql: `SELECT * FROM venues WHERE venue_id = ?`,
+    args: [venueId]
+  });
+  return res.rows[0] || null;
 }
 
 // PATCH Queries //
 
-export function updateGig(gigId, payload) {
+export async function updateGig(gigId, payload) {
   const updates = [];
   const values = [];
 
-  // 1. Dynamically check which fields were provided
   if (payload.venue_id !== undefined) {
     updates.push('venue_id = ?');
     values.push(payload.venue_id);
@@ -173,7 +135,6 @@ export function updateGig(gigId, payload) {
     values.push(payload.payment);
   }
   if (payload.confirmed !== undefined) {
-    // Convert boolean to integer for SQLite if necessary (true = 1, false = 0)
     updates.push('confirmed = ?');
     values.push(payload.confirmed ? 1 : 0);
   }
@@ -182,105 +143,75 @@ export function updateGig(gigId, payload) {
     return { success: false, message: "No valid fields provided for update." };
   }
 
-  // 3. Bump the updated_at timestamp
   updates.push('updated_at = (unixepoch())');
-
-  // 4. Construct final SQL string
   const setClause = updates.join(', ');
-  
-  const stmt = database.prepare(`
-    UPDATE gigs 
-    SET ${setClause} 
-    WHERE gig_id = ?
-  `);
   values.push(gigId);
 
-  // 5. Execute the update
-  const info = stmt.run(...values);
+  const info = await database.execute({
+    sql: `UPDATE gigs SET ${setClause} WHERE gig_id = ?`,
+    args: values
+  });
 
   return { 
-    success: info.changes > 0, 
-    changes: info.changes 
+    success: info.rowsAffected > 0, 
+    changes: Number(info.rowsAffected)
   };
 }
 
-export function updateVenue(venueId, payload) {
+export async function updateVenue(venueId, payload) {
   const updates = [];
   const values = [];
 
-  if (payload.name !== undefined) {
-    updates.push('name = ?');
-    values.push(payload.name);
-  }
-  if (payload.street !== undefined) {
-    updates.push('street = ?');
-    values.push(payload.street);
-  }
-  if (payload.city !== undefined) {
-    updates.push('city = ?');
-    values.push(payload.city);
-  }
-  if (payload.province !== undefined) {
-    updates.push('province = ?');
-    values.push(payload.province);
-  }
-  if (payload.postal_code !== undefined) {
-    updates.push('postal_code = ?');
-    values.push(payload.postal_code);
-  }
+  if (payload.name !== undefined) { updates.push('name = ?'); values.push(payload.name); }
+  if (payload.street !== undefined) { updates.push('street = ?'); values.push(payload.street); }
+  if (payload.city !== undefined) { updates.push('city = ?'); values.push(payload.city); }
+  if (payload.province !== undefined) { updates.push('province = ?'); values.push(payload.province); }
+  if (payload.postal_code !== undefined) { updates.push('postal_code = ?'); values.push(payload.postal_code); }
 
   if (updates.length === 0) {
     return { success: false, message: "No valid fields provided for update." };
   }
 
   const setClause = updates.join(', ');
-  
-  const stmt = database.prepare(`
-    UPDATE venues 
-    SET ${setClause} 
-    WHERE venue_id = ?
-  `);
-
   values.push(venueId);
-  const info = stmt.run(...values);
+
+  const info = await database.execute({
+    sql: `UPDATE venues SET ${setClause} WHERE venue_id = ?`,
+    args: values
+  });
 
   return { 
-    success: info.changes > 0, 
-    changes: info.changes 
+    success: info.rowsAffected > 0, 
+    changes: Number(info.rowsAffected)
   };
 }
 
 // DELETE Queries //
-export function deleteGig(gigId) {
-  const stmt = database.prepare(`
-    DELETE FROM gigs 
-    WHERE gig_id = ?
-  `);
-  
-  const info = stmt.run(gigId);
+export async function deleteGig(gigId) {
+  const info = await database.execute({
+    sql: `DELETE FROM gigs WHERE gig_id = ?`,
+    args: [gigId]
+  });
 
   return { 
-    success: info.changes > 0, 
-    changes: info.changes 
+    success: info.rowsAffected > 0, 
+    changes: Number(info.rowsAffected)
   };
 }
 
-export function deleteVenue(venueId) {
+export async function deleteVenue(venueId) {
   try {
-    const stmt = database.prepare(`
-      DELETE FROM venues 
-      WHERE venue_id = ?
-    `);
-    
-    const info = stmt.run(venueId);
+    const info = await database.execute({
+      sql: `DELETE FROM venues WHERE venue_id = ?`,
+      args: [venueId]
+    });
 
     return { 
-      success: info.changes > 0, 
-      changes: info.changes 
+      success: info.rowsAffected > 0, 
+      changes: Number(info.rowsAffected)
     };
 
   } catch (error) {
-    // Catch the specific SQLite Foreign Key constraint violation
     if (error.message.includes('FOREIGN KEY constraint failed')) {
       return { 
         success: false, 
@@ -288,7 +219,6 @@ export function deleteVenue(venueId) {
         message: 'Cannot delete this venue because there are still gigs attached to it.' 
       };
     }
-    
     throw error;
   }
 }
