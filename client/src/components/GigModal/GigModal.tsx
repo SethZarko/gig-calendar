@@ -26,6 +26,11 @@ interface CreateGigPayload {
   };
 }
 
+interface CustomApiError {
+  status: number;
+  message: string;
+}
+
 export const GigModal = ({
   isOpen,
   onClose,
@@ -37,13 +42,13 @@ export const GigModal = ({
   // --- State ---
   const [venues, setVenues] = useState<Venue[]>([]);
   const [venueId, setVenueId] = useState<string>(
-    existingGig?.venue.venue_id.toString() || ""
+    existingGig?.venue.venue_id.toString() || "",
   );
   const [payment, setPayment] = useState<string>(
-    existingGig?.payment.toString() || ""
+    existingGig?.payment.toString() || "",
   );
   const [confirmed, setConfirmed] = useState<boolean>(
-    existingGig?.confirmed || false
+    existingGig?.confirmed || false,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -122,23 +127,45 @@ export const GigModal = ({
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Failed to save gig and venue transaction");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw {
+          status: res.status,
+          message: errorData.message || "An unexpected error occurred.",
+        };
+      }
 
       revalidator.revalidate();
       onClose();
     } catch (error) {
       console.error("Save Error:", error);
-      alert("Failed to save gig/venue. Please try again.");
+
+      if (error && typeof error === "object" && "status" in error) {
+        const apiError = error as CustomApiError;
+
+        if (apiError.status === 409) {
+          alert(apiError.message);
+        } else {
+          alert(`Error (${apiError.status}): ${apiError.message}`);
+        }
+        return;
+      }
+      const genericMessage =
+        error instanceof Error ? error.message : "Network error.";
+      alert(genericMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const formattedDate = new Date(`${currentDate}T12:00:00`).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const formattedDate = new Date(`${currentDate}T12:00:00`).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    },
+  );
 
   return (
     <div className={styles.modalOverlay}>
@@ -154,7 +181,9 @@ export const GigModal = ({
               onChange={handleVenueChange}
               required
             >
-              <option value="" disabled>Select a venue...</option>
+              <option value="" disabled>
+                Select a venue...
+              </option>
               <option value="NEW_VENUE" className={styles.newVenueOption}>
                 + Create New Venue
               </option>
