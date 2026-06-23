@@ -22,6 +22,14 @@ app.use('/api/venues', venuesRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
+
+  if (err.code === "SQLITE_CONSTRAINT" || err.message?.includes("UNIQUE constraint failed")) {
+    return res.status(409).json({
+      error: "Conflict",
+      message: "The venue you are trying to create already exists. Please select it from the existing venues to create this gig."
+    });
+  }
+
   res.status(500).json({ error: "Something went wrong on the server." });
 });
 
